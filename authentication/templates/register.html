@@ -1,0 +1,24 @@
+{% extends 'index.html' %} {% block content %}
+<div class="container">
+  <form method="POST">
+    {% csrf_token %}
+    <h2 class="text-center formHead">Register</h2>
+
+    {% for field in form %}
+    <div class="row">
+      <div class="col-md-2">{{ field.label_tag }}</div>
+      <div class="col-md-10 pull-left">{{ field }}</div>
+    </div>
+    {% for error in field.errors %}
+    <div class="row">
+      <div class="alert alert-danger">{{error}}</div>
+    </div>
+    {% endfor %}<br />
+    {% endfor %}
+
+    <button class="btn btn-primary btn-block" type="submit">Register</button>
+  </form>
+  you have an account? <a href="/" target="blank"><strong>login here</strong></a
+  >!
+</div>
+{% endblock %}
