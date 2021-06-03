@@ -1,0 +1,64 @@
+{% extends 'nav2.html' %} {% block content %}
+<form method="POST">
+  {% csrf_token %}
+  <div class="text-right">
+    <p id="upclock">00:00</p>
+  </div>
+  <div class="container mt-sm-5 my-1">
+    <div class="question ml-sm-5 pl-sm-5 pt-2">
+      <div class="py-2 h5">
+        <b>Q{{qn_no}}: {{question_obj.question}}</b>
+      </div>
+      <div class="ml-md-3 ml-sm-3 pl-md-5 pt-sm-0 pt-3" id="options">
+        <label class="options"
+          >{{question_obj.option1}}
+          <input type="radio" id="option1" name="choosed" value="option1" />
+          <span class="checkmark"></span>
+        </label>
+        <label class="options"
+          >{{question_obj.option2}}
+          <input type="radio" id="option2" name="choosed" value="option2" />
+          <span class="checkmark"></span>
+        </label>
+        <label class="options"
+          >{{question_obj.option3}}
+          <input type="radio" id="option3" name="choosed" value="option3" />
+          <span class="checkmark"></span>
+        </label>
+        <label class="options"
+          >{{question_obj.option4}}
+          <input type="radio" id="option4" name="choosed" value="option4" />
+          <span class="checkmark"></span>
+        </label>
+      </div>
+    </div>
+    <div class="d-flex align-items-center pt-3">
+      <div class="ml-auto mr-sm-5">
+        <input
+          type="button"
+          class="btn btn-primary launch-modal"
+          value="Submit"
+        />
+      </div>
+    </div>
+    <div id="myModal" class="modal fade">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header p-2">
+            <h5 class="modal-title float-left"></h5>
+          </div>
+          <div class="modal-body">
+            <h6 class="explanation" style="color: black"></h6>
+          </div>
+          <div class="modal-footer p-1">
+            <button type="submit" class="btn btn-primary">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input type="hidden" name="result" value="" />
+  <input type="hidden" name="qn_no" value="{{qn_no}}" />
+  <input type="hidden" name="time" value="" />
+</form>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'nav2.html' %} {% block content %}
+<div class="container p-2">
+  <div class="quiz_cards row row-cols-1 row-cols-md-4 g-4">
+    {% if quizzes %} {% for quiz in quizzes %}
+    <div class="col">
+      <div class="card bg-transparent border-white animated zoomInLeft">
+        <div class="card-body">
+          <h4 class="card-title heading-main">{{quiz.quiz_name}}</h4>
+          <h6 class="card-subtitle mb-2 text-white">Author: {{quiz.author}}</h6>
+          <p class="card-text">
+            <small class="text-info">Created at: {{quiz.created_at}}</small>
+          </p>
+          <a
+            type="button"
+            href="{% url 'play-quiz' quiz.id  0 %}"
+            class="btn btn-success btn-md"
+            >Start Play</a
+          >
+        </div>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <h5 class="heading-main">No Quizzes Available</h5>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

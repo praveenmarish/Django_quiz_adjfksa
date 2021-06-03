@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script>
+      var variables = {
+        explanation: "{{question_obj.explanation}}",
+        answer: "{{question_obj.answer}}",
+      };
+
+      $(document).ready(function () {
+        $(".launch-modal").click(function () {
+          var radio_value = $('input[name="choosed"]:checked').val();
+          if (radio_value == variables.answer) {
+            $(".modal-title").html(
+              ' Correct<i class="fas fa-check-circle px-1 "></i>'
+            );
+            $(".modal-title").css("color", "green");
+            $(".explanation").html("Explanation: " + variables.explanation);
+            $("input[name=result]").val("correct");
+          } else {
+            $(".modal-title").html(
+              'Incorrect<i class="fas fa-times-circle px-1 "></i>'
+            );
+            $(".modal-title").css("color", "red");
+            $(".explanation").html("Explanation:" + variables.explanation);
+            $("input[name=result]").val("incorrect");
+          }
+          $("#myModal").modal({
+            backdrop: "static",
+          });
+        });
+      });
+
+      function pad(num) {
+        if (num < 10) {
+          return "0" + num;
+        } else {
+          return num;
+        }
+      }
+
+      function intiateUp() {
+        countUp(1);
+      }
+
+      function countUp(time) {
+        y = setInterval(() => {
+          var min = parseInt(time / 60);
+          var sec = time % 60;
+          time += 1;
+          document.getElementById("upclock").innerHTML =
+            pad(min) + ":" + pad(sec);
+          $("input[name=time]").val(time);
+        }, 1000);
+      }
+    </script>
+  </head>
+  <body onload="intiateUp()">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand">Quiz</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/quiz/quizzes">Quiz</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+    {% block content %} {% endblock %}
+  </body>
+</html>

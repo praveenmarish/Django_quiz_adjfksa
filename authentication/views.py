@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login as dj_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -15,15 +15,22 @@ def login(request):
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
-                login(request, user)
+                dj_login(request, user)
                 messages.info(request, f"You are now logged in as {username}")
-                return redirect('quiz/')
+                if user.is_superuser or user.is_staff:
+                    return redirect('quiz/')
+                return redirect('quiz/dashboard')
+
             else:
                 messages.error(request, "Invalid username or password.")
         else:
             messages.error(request, "Invalid username or password.")
+
     elif request.user.is_authenticated:
-        return redirect('quiz/')
+        if request.user.is_superuser or request.user.is_staff:
+            print(True)
+            return redirect('quiz/')
+        return redirect('quiz/dashboard')
 
     form = AuthenticationForm()
     return render(request=request, template_name="login.html",
@@ -37,8 +44,8 @@ def register(request):
             user = form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f"New account created: {username}")
-            login(request, user)
-            return redirect('login')
+            dj_login(request, user)
+            return redirect('login/')
 
         else:
             for msg in form.error_messages:
@@ -52,5 +59,3 @@ def register(request):
     return render(request=request,
                   template_name="register.html",
                   context={"form": form})
-    print("register")
-    pass
