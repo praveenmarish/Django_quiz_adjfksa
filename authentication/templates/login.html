@@ -1,18 +1,23 @@
 {% extends 'index.html' %} {% block content %}
-<div class="container ">
-<form method="POST" >{% csrf_token %}
-<h2 class="text-center formHead ">Login</h2>
-    {{form.as_p}}
-    <button class="btn btn-primary btn-block" type="submit">Login</button>
-</form>
-Don't have an account? <a href="/register" target="blank"><strong>register here</strong></a>!
-</div>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+<div class="container">
+  <form method="POST">
+    {% csrf_token %}
+    <h2 class="text-center formHead">Login</h2>
+    {% for field in form %}
+    <div class="row">
+      <div class="col-md-2">{{ field.label_tag }}</div>
+      <div class="col-md-10 pull-left">{{ field }}</div>
+    </div>
+    {% for error in field.errors %}
+    <div class="row">
+      <div class="alert alert-danger">{{error}}</div>
+    </div>
+    {% endfor %}<br />
     {% endfor %}
-</ul>
-{% endif %}
+    <button class="btn btn-primary btn-block" type="submit">Login</button>
+  </form>
+  Don't have an account?
+  <a href="/register" target="blank"><strong>register here</strong></a
+  >!
 </div>
 {% endblock %}
