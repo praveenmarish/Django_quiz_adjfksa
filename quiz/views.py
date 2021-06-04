@@ -1,9 +1,11 @@
 from django.shortcuts import redirect, render
 from .models import Questions, QuizAuthor, UserResult
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
 
+@login_required
 def create_quiz(request):
     if request.method == "POST":
         quiz_name = request.POST["quiz_name"]
@@ -36,17 +38,20 @@ def create_quiz(request):
         return render(request, "create_quiz.html", {"range": range(10)})
 
 
+@login_required
 def quiz_list(request):
     return render(
         request, "quiz_list.html", {"quizzes_list": QuizAuthor.objects.all()}
     )
 
 
+@login_required
 def delete_quiz(request, quiz_id):
     QuizAuthor.objects.get(id=quiz_id).delete()
     return redirect("/")
 
 
+@login_required
 def student_quizzes(request):
     return render(
         request,
@@ -55,6 +60,7 @@ def student_quizzes(request):
     )
 
 
+@login_required
 def play_quiz(request, quiz_id, qn_no):
     all_q = Questions.objects.filter(quiz_id=int(quiz_id))
     time = 0
@@ -173,6 +179,7 @@ def play_quiz(request, quiz_id, qn_no):
         )
 
 
+@login_required
 def dashboard(request):
     quiz_ids = {
         quiz.quiz_id: quiz.score
