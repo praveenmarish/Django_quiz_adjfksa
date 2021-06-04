@@ -1,11 +1,10 @@
 {% extends 'nav1.html' %} {% block content %}
 <div class="quiz-c-header container">
   <h2 class="heading-main">Quiz List</h2>
-  <a href="create_quiz" class="btn btn-primary">Create Quiz</a>
 </div>
 <div class="container">
   {% for quiz in quizzes_list %}
-  <div class="card">
+  <div class="card" style="max-width: 18rem">
     <div class="card-body">
       <h4 class="card-title heading-main">{{quiz.quiz_name}}</h4>
       <h6 class="card-subtitle mb-2 text-info">Author: {{quiz.author}}</h6>

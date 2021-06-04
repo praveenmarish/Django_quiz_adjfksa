@@ -61,7 +61,7 @@ def play_quiz(request, quiz_id, qn_no):
     if request.method == "POST":
         qn_no = int(request.POST["qn_no"])
         answer_choosed = request.POST["result"]
-        time = int(request.POST["time"])+time
+        time = int(request.POST["time"])
         if qn_no in range(0, 10):
             question_obj = all_q[int(qn_no)]
             if UserResult.objects.filter(
@@ -72,6 +72,7 @@ def play_quiz(request, quiz_id, qn_no):
                         user=request.user.username, quiz_id=quiz_id
                     )
                     u.score = str(int(u.score) + 1)
+                    u.time = str(int(u.time) + time)
                     u.save()
                     return render(
                         request,
@@ -83,6 +84,11 @@ def play_quiz(request, quiz_id, qn_no):
                         },
                     )
                 else:
+                    u = UserResult.objects.get(
+                        user=request.user.username, quiz_id=quiz_id
+                    )
+                    u.time = str(int(u.time) + time)
+                    u.save()
                     return render(
                         request,
                         "play_quiz.html",
@@ -97,6 +103,7 @@ def play_quiz(request, quiz_id, qn_no):
                     u = UserResult(
                         user=request.user.username, quiz_id=quiz_id, score=1
                     )
+                    u.time = str(time)
                     u.save()
                     return render(
                         request,
@@ -111,6 +118,7 @@ def play_quiz(request, quiz_id, qn_no):
                     u = UserResult(
                         user=request.user.username, quiz_id=quiz_id, score=0
                     )
+                    u.time = str(time)
                     u.save()
                     return render(
                         request,
@@ -130,9 +138,11 @@ def play_quiz(request, quiz_id, qn_no):
                 )
                 if answer_choosed == "correct":
                     u.score = str(int(u.score) + 1)
+                    u.time = str(int(u.time) + time)
                     u.save()
+                time = int(u.time)
                 score = u.score
-                return render(request, 'alert.html', {"message": "Your Score out of 10 is "+score, "url": "/quiz/quizzes/"})
+                return render(request, 'alert.html', {"message": "Your Score out of 10 is "+score+" and time taken for this quiz is "+str(time//60)+"min "+str(time % 60)+"sec ", "url": "/quiz/quizzes/"})
             else:
                 return render(request, 'alert.html', {"message": "Something Went Wrong", "url": "/quiz/quizzes/"})
     else:
@@ -143,6 +153,8 @@ def play_quiz(request, quiz_id, qn_no):
             u = UserResult.objects.get(
                 user=request.user.username, quiz_id=quiz_id)
             u.score = "0"
+            print(type(u.time))
+            u.time = "0"
             u.save()
             return render(
                 request,

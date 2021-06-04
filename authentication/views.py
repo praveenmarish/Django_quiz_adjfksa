@@ -45,7 +45,7 @@ def register(request):
             username = form.cleaned_data.get('username')
             messages.success(request, f"New account created: {username}")
             dj_login(request, user)
-            return redirect('login/')
+            return redirect('/')
 
         else:
             for msg in form.error_messages:
