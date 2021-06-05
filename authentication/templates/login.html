@@ -8,14 +8,15 @@
       <div class="col-md-2">{{ field.label_tag }}</div>
       <div class="col-md-10 pull-left">{{ field }}</div>
     </div>
-    {% for error in field.errors %}
+    <br />
+    {% endfor %} {% for message in messages %}
     <div class="row">
-      <div class="alert alert-danger">{{error}}</div>
+      <div class="alert alert-danger">{{ message }}</div>
     </div>
-    {% endfor %}<br />
     {% endfor %}
     <button class="btn btn-primary btn-block" type="submit">Login</button>
   </form>
+  <br />
   Don't have an account?
   <a href="/register" target="blank"><strong>register here</strong></a
   >!
