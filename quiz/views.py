@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
 from .models import Questions, QuizAuthor, UserResult
 from django.contrib.auth.decorators import login_required
@@ -61,122 +62,43 @@ def student_quizzes(request):
 
 
 @login_required
-def play_quiz(request, quiz_id, qn_no):
+def play_quiz(request, quiz_id):
     all_q = Questions.objects.filter(quiz_id=int(quiz_id))
-    time = 0
-    if request.method == "POST":
+    question_obj = all_q[0]
+    return render(
+        request,
+        "play_quiz.html",
+        {"qn_no": 1, "question": question_obj.question, "option1": question_obj.option1, "option2": question_obj.option2, "option3": question_obj.option3,
+            "option4": question_obj.option4, "explanation": question_obj.explanation, "answer": question_obj.answer, "quiz_id": quiz_id},
+    )
+
+
+@login_required
+def play_next(request):
+    if request.is_ajax and request.method == "POST":
+        quiz_id = int(request.POST["quiz_id"])
+        all_q = Questions.objects.filter(quiz_id=quiz_id)
         qn_no = int(request.POST["qn_no"])
+        question_obj = all_q[qn_no+1]
         answer_choosed = request.POST["result"]
         time = int(request.POST["time"])
-        if qn_no in range(0, 10):
-            question_obj = all_q[int(qn_no)]
-            if UserResult.objects.filter(
-                user=request.user.username, quiz_id=quiz_id
-            ).exists():
-                if answer_choosed == "correct":
-                    u = UserResult.objects.get(
-                        user=request.user.username, quiz_id=quiz_id
-                    )
-                    u.score = str(int(u.score) + 1)
-                    u.time = str(int(u.time) + time)
-                    u.save()
-                    return render(
-                        request,
-                        "play_quiz.html",
-                        {
-                            "question_obj": question_obj,
-                            "qn_no": int(qn_no)+1,
-                            "quiz_id": quiz_id,
-                        },
-                    )
-                else:
-                    u = UserResult.objects.get(
-                        user=request.user.username, quiz_id=quiz_id
-                    )
-                    u.time = str(int(u.time) + time)
-                    u.save()
-                    return render(
-                        request,
-                        "play_quiz.html",
-                        {
-                            "question_obj": question_obj,
-                            "qn_no": int(qn_no)+1,
-                            "quiz_id": quiz_id,
-                        },
-                    )
-            else:
-                if answer_choosed == "correct":
-                    u = UserResult(
-                        user=request.user.username, quiz_id=quiz_id, score=1
-                    )
-                    u.time = str(time)
-                    u.save()
-                    return render(
-                        request,
-                        "play_quiz.html",
-                        {
-                            "question_obj": question_obj,
-                            "qn_no": int(qn_no)+1,
-                            "quiz_id": quiz_id,
-                        },
-                    )
-                else:
-                    u = UserResult(
-                        user=request.user.username, quiz_id=quiz_id, score=0
-                    )
-                    u.time = str(time)
-                    u.save()
-                    return render(
-                        request,
-                        "play_quiz.html",
-                        {
-                            "question_obj": question_obj,
-                            "qn_no": int(qn_no)+1,
-                            "quiz_id": quiz_id,
-                        },
-                    )
-        else:
-            if UserResult.objects.filter(
-                user=request.user.username, quiz_id=quiz_id
-            ).exists():
-                u = UserResult.objects.get(
-                    user=request.user.username, quiz_id=quiz_id
-                )
-                if answer_choosed == "correct":
-                    u.score = str(int(u.score) + 1)
-                    u.time = str(int(u.time) + time)
-                    u.save()
-                time = int(u.time)
-                score = u.score
-                return render(request, 'alert.html', {"message": "Your Score out of 10 is "+score+" and time taken for this quiz is "+str(time//60)+"min "+str(time % 60)+"sec ", "url": "/quiz/quizzes/"})
-            else:
-                return render(request, 'alert.html', {"message": "Something Went Wrong", "url": "/quiz/quizzes/"})
-    else:
-        question_obj = all_q[0]
-        if UserResult.objects.filter(
-            user=request.user.username, quiz_id=quiz_id
-        ).exists():
+        if UserResult.objects.filter(user=request.user.username, quiz_id=quiz_id).exists():
             u = UserResult.objects.get(
                 user=request.user.username, quiz_id=quiz_id)
-            u.score = "0"
-            print(type(u.time))
-            u.time = "0"
+            if answer_choosed == "correct":
+                u.score = str(int(u.score) + 1)
+            u.time = str(int(u.time) + time)
             u.save()
-            return render(
-                request,
-                "play_quiz.html",
-                {
-                    "question_obj": question_obj,
-                    "qn_no": int(qn_no)+1,
-                    "quiz_id": quiz_id,
-                },
-            )
-        return render(
-            request,
-            "play_quiz.html",
-            {"question_obj": question_obj, "qn_no": int(
-                qn_no)+1, "quiz_id": quiz_id},
-        )
+        else:
+            score = 0
+            if answer_choosed == "correct":
+                score = 1
+            u = UserResult(user=request.user.username,
+                           quiz_id=quiz_id, score=score)
+            u.time = str(time)
+            u.save()
+        return JsonResponse({"qn_no": qn_no+1, "question": question_obj.question, "option1": question_obj.option1, "option2": question_obj.option2, "option3": question_obj.option3,
+                             "option4": question_obj.option4, "explanation": question_obj.explanation, "answer": question_obj.answer, "quiz_id": quiz_id})
 
 
 @login_required

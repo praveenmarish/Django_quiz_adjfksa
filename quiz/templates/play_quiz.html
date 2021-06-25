@@ -1,64 +1,166 @@
 {% extends 'nav2.html' %} {% block content %}
-<form method="POST">
-  {% csrf_token %}
-  <div class="text-right">
-    <p id="upclock">00:00</p>
-  </div>
-  <div class="container mt-sm-5 my-1">
-    <div class="question ml-sm-5 pl-sm-5 pt-2">
-      <div class="py-2 h5">
-        <b>Q{{qn_no}}: {{question_obj.question}}</b>
-      </div>
-      <div class="ml-md-3 ml-sm-3 pl-md-5 pt-sm-0 pt-3" id="options">
-        <label class="options">
-          <input type="radio" id="option1" name="choosed" value="option1" />
-          {{question_obj.option1}}
-          <span class="checkmark"></span> </label
-        ><br />
-        <label class="options">
-          <input type="radio" id="option2" name="choosed" value="option2" />
-          {{question_obj.option2}}
-          <span class="checkmark"></span> </label
-        ><br />
-        <label class="options">
-          <input type="radio" id="option3" name="choosed" value="option3" />
-          {{question_obj.option3}}
-          <span class="checkmark"></span> </label
-        ><br />
-        <label class="options">
-          <input type="radio" id="option4" name="choosed" value="option4" />
-          {{question_obj.option4}}
-          <span class="checkmark"></span> </label
-        ><br />
-      </div>
+<body onload="intiateUp()">
+  <form id="form-1">
+    <div class="text-right">
+      <p id="upclock">00:00</p>
     </div>
-    <div class="d-flex align-items-center pt-3">
-      <div class="ml-auto mr-sm-5">
-        <input
-          type="button"
-          class="btn btn-primary launch-modal"
-          value="Submit"
-        />
+    <div class="container mt-sm-5 my-1">
+      <div class="question ml-sm-5 pl-sm-5 pt-2">
+        <div class="py-2 h5">
+          <p class="question_no">
+            <b>Q</b><b id="number">{{qn_no}}</b><b>: <b id="question">{{question}}</b>
+          </p>
+        </div>
+
+        <div class="ml-md-3 ml-sm-3 pl-md-5 pt-sm-0 pt-3" id="options">
+          <label class="options">
+            <input type="radio" id="option1" name="choosed" value="option1" />
+            <b id="option1">{{option1}}</b>
+            <span class="checkmark"></span> </label
+          ><br />
+          <label class="options">
+            <input type="radio" id="option2" name="choosed" value="option2" />
+            <b id="option2">{{option2}}</b>
+            <span class="checkmark"></span> </label
+          ><br />
+          <label class="options">
+            <input type="radio" id="option3" name="choosed" value="option3" />
+            <b id="option3">{{option3}}</b>
+            <span class="checkmark"></span> </label
+          ><br />
+          <label class="options">
+            <input type="radio" id="option4" name="choosed" value="option4" />
+            <b id="option4">{{option4}}</b>
+            <span class="checkmark"></span> </label
+          ><br />
+        </div>
       </div>
-    </div>
-    <div id="myModal" class="modal fade">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header p-2">
-            <h5 class="modal-title float-left"></h5>
-          </div>
-          <div class="modal-body">
-            <h6 class="explanation" style="color: black"></h6>
-          </div>
-          <div class="modal-footer p-1">
-            <button type="submit" class="btn btn-primary">Next</button>
+      <div class="d-flex align-items-center pt-3">
+        <div class="ml-auto mr-sm-5">
+          <input
+            type="button"
+            class="btn btn-primary launch-modal"
+            value="Submit"
+          />
+        </div>
+      </div>
+      <div id="myModal" class="modal fade">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header p-2">
+              <h5 class="modal-title float-left"></h5>
+            </div>
+            <div class="modal-body">
+              <h6 class="explanation" style="color: black"></h6>
+            </div>
+            <div class="modal-footer p-1">
+              <button type="submit" class="btn btn-primary">Next</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <input type="hidden" name="result" value="" />
-  <input type="hidden" name="qn_no" value="{{qn_no}}" />
-  <input type="hidden" name="time" value="" />
-</form>
+  </form>
+  <script>
+    var variables = {
+      number: "{{qn_no}}",
+      explanation: "{{explanation}}",
+      answer: "{{answer}}",
+    };
+
+    function pad(num) {
+      if (num < 10) {
+        return "0" + num;
+      } else {
+        return num;
+      }
+    }
+
+    function intiateUp() {
+      countUp(1);
+    }
+
+    function countUp(time) {
+      y = setInterval(() => {
+        var min = parseInt(time / 60);
+        var sec = time % 60;
+        time += 1;
+        document.getElementById("upclock").innerHTML =
+          pad(min) + ":" + pad(sec);
+      }, 1000);
+    }
+
+    function time() {
+      var val = document.getElementById("upclock").innerText;
+      var sec = val.split(":")[1];
+      var min = val.split(":")[0];
+      return parseInt(min) * 60 + parseInt(sec);
+    }
+
+    function restart() {
+      countUp(time());
+    }
+
+    $(".launch-modal").click(function () {
+      clearInterval(y);
+      var radio_value = $('input[name="choosed"]:checked').val();
+      if (radio_value == variables.answer) {
+        $(".modal-title").html(
+          ' Correct<i class="fas fa-check-circle px-1 "></i>'
+        );
+        $(".modal-title").css("color", "green");
+        $(".explanation").html("Explanation: " + variables.explanation);
+        answer = "correct";
+      } else {
+        $(".modal-title").html(
+          'Incorrect<i class="fas fa-times-circle px-1 "></i>'
+        );
+        $(".modal-title").css("color", "red");
+        $(".explanation").html("Explanation:" + variables.explanation);
+        answer = "incorrect";
+      }
+      modal = $("#myModal").modal({
+        backdrop: "static",
+      });
+      modal.show();
+    });
+
+    $("#form-1").submit(function (e) {
+      // preventing from page reload and default actions
+      e.preventDefault();
+      restart();
+      var serializedData = $(this).serialize();
+
+      $.ajax({
+        type: "POST",
+        url: "{% url 'play-next' %}",
+        data: {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          quiz_id: "{{ quiz_id }}",
+          result: answer,
+          qn_no: variables.number,
+          time: time(),
+        },
+        success: reload,
+        error: function (response) {
+          alert("error");
+        },
+      });
+      function reload(response) {
+        $(".modal-backdrop").remove();
+        modal.hide();
+        response = response;
+        variables.answer=response.answer
+        variables.explanation=response.explanation
+        variables.number=response.qn_no
+        document.getElementById("number").innerHTML=response.qn_no
+        document.getElementById("question").innerHTML=response.question
+        document.getElementById("option1").innerHTML=response.option1
+        document.getElementById("option2").innerHTML=response.option2
+        document.getElementById("option3").innerHTML=response.option3
+        document.getElementById("option4").innerHTML=response.option4
+      }
+    });
+  </script>
+</body>
 {% endblock %}
